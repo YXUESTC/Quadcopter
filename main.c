@@ -1,6 +1,6 @@
-#include<reg52.h>
+#include<reg52.h> 
 #include<intrins.h>
-sbit trig=P3^2;   //外部中断INT0
+sbit trig=P3^2;   //外部中断INT0 杨旭不过
 sbit echo=P3^3;	  //外部中断INT1
 sbit dula=P2^6;
 sbit wela=P2^7;

@@ -1,0 +1,139 @@
+C51 COMPILER V9.01   MAIN                                                                  10/05/2016 15:51:12 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: D:\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg52.h>
+   2          #include<intrins.h>
+   3          sbit trig=P3^2;   //外部中断INT0
+   4          sbit echo=P3^3;   //外部中断INT1
+   5          sbit dula=P2^6;
+   6          sbit wela=P2^7;
+   7          int time0,time1,time,flag=0,distant;
+   8          char table[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f};
+   9          void delay(int x)
+  10          {
+  11   1                int i,j;
+  12   1                for(i=x;i>0;i--)
+  13   1                for(j=101;j>0;j--);
+  14   1      }
+  15          void delay_10us()
+  16          {
+  17   1        
+  18   1        _nop_();
+  19   1        _nop_();
+  20   1        _nop_();
+  21   1        _nop_();
+  22   1        _nop_();
+  23   1        _nop_();
+  24   1        _nop_();
+  25   1        _nop_();
+  26   1        _nop_();
+  27   1        _nop_();                       
+  28   1      }
+  29          void display()
+  30          {
+  31   1               int ge,shi,bai;
+  32   1                        bai=distant/100;
+  33   1                        shi=(distant%100)/10;
+  34   1                        ge=distant%10; 
+  35   1                        dula=1;
+  36   1                        P0=table[bai];
+  37   1                        dula=0;
+  38   1                        P0=0xff;
+  39   1                        wela=1;
+  40   1                        P0=0xfe;
+  41   1                        wela=0;
+  42   1                        delay(1);
+  43   1                      
+  44   1                        dula=1;
+  45   1                        P0=table[shi];
+  46   1                        dula=0;
+  47   1                        P0=0xff;
+  48   1                        wela=1;
+  49   1                        P0=0xfd;
+  50   1                        wela=0;
+  51   1                        delay(1);
+  52   1                        
+  53   1                        dula=1;
+  54   1                        P0=table[ge];
+  55   1                        dula=0;
+C51 COMPILER V9.01   MAIN                                                                  10/05/2016 15:51:12 PAGE 2   
+
+  56   1                        P0=0xff;
+  57   1                        wela=1;
+  58   1                        P0=0xfb;
+  59   1                        wela=0;
+  60   1      }
+  61          void main()
+  62          {
+  63   1         trig=0;
+  64   1         echo=0;
+  65   1         TMOD=0x10;
+  66   1         TH1=0;
+  67   1         TL1=0;
+  68   1        while(1)
+  69   1        {
+  70   2                trig=1;
+  71   2                delay_10us();
+  72   2                trig=0;
+  73   2                while(echo==0);
+  74   2                EA=1;
+  75   2                EX1=1;
+  76   2                ET1=1;
+  77   2                TR1=1;
+  78   2                delay(20);
+  79   2                
+  80   2        if(flag==1)
+  81   2        {
+  82   3            flag=0;
+  83   3                
+  84   3                TH1=0;
+  85   3                TL1=0;
+  86   3        }
+  87   2        else
+  88   2        {
+  89   3                  distant=0;
+  90   3                      display();
+  91   3        }
+  92   2       
+  93   2        }
+  94   1      }
+  95          void sert() interrupt 2
+  96          {
+  97   1            TR1=0;
+  98   1                EA=0;
+  99   1                time1=TH1;
+ 100   1                time0=TL1;
+ 101   1                time=time1*256+time0;
+ 102   1                distant=time*0.017;    //算出来的厘米
+ 103   1                display();
+ 104   1                flag=1;
+ 105   1                
+ 106   1                
+ 107   1      }
+ 108          void ser()interrupt 3
+ 109          {
+ 110   1                TH1=0;
+ 111   1                TL1=0;
+ 112   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    368    ----
+   CONSTANT SIZE    =   ----    ----
+C51 COMPILER V9.01   MAIN                                                                  10/05/2016 15:51:12 PAGE 3   
+
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     20       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
